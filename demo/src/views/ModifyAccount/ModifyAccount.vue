@@ -1,7 +1,8 @@
 <template>
   <div class="home">
-  默认主页系统管理
+密码修改
   </div>
+
 </template>
 
 <script>

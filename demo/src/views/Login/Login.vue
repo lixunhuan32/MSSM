@@ -23,8 +23,6 @@
                 <el-button @click="resetForm('loginForm')">重置</el-button>
                 </el-form-item>
             </el-form>
-
-
         </div>
         
     </div>
@@ -61,9 +59,6 @@ export default {
       // 这是再次验证密码的函数
        const checkPass=(rule,value,callback)=>{
         //  rule是传入的验证规则 value是用户输入的值 callback是一个回调函数
-        //  console.log(this.loginForm.password)
-        //  console.log(value)
-         
          if(value === ""){
            callback(new Error("请再次输入密码"));
          }else if(value!=this.loginForm.password){
@@ -98,17 +93,20 @@ export default {
     },
     
     methods: {  
-      //  点击这个按钮触发这个函数
+      //  点击登陆按钮触发这个函数
       submitForm(formName) {
         // 获取表单组件 调用验证方法validate
         this.$refs[formName].validate((valid) => {
           //  如果所用前段验证通过 validate里面的值就是true
           if (valid) {
             alert('前段验证通过，登陆成功');
-            
-           
-
-
+            // 点击登陆按钮这里就可以收集到的数据发送给前段
+            let params={
+              username:this.loginForm.username,
+              password:this .loginForm.password,
+            }
+            // 这是Vue也就是this.$router一内置跳转方法push
+          this.$router.push("/")
           } else {
             console.log('前段验证失败，不能提交给后台');
             return false;
@@ -120,7 +118,6 @@ export default {
         this.$refs[formName].resetFields();
       }
     }
-    
 }
 </script>
 <style lang="less">

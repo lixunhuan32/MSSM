@@ -1,7 +1,9 @@
+
 <template>
   <div class="home">
-  默认主页系统管理
+      添加商品
   </div>
+
 </template>
 
 <script>

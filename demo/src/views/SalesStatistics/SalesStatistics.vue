@@ -1,7 +1,8 @@
 <template>
   <div class="home">
-  默认主页系统管理
+统计销售
   </div>
+
 </template>
 
 <script>
