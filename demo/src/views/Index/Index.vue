@@ -11,7 +11,9 @@
        <!-- 右侧 -->
         <el-container>
         <!-- 右侧头部 -->
-        <el-header>Header</el-header>
+        <el-header>
+          <Top></Top>
+          </el-header>
         <!-- 右侧中部 -->
         <el-main>
           <router-view></router-view>
@@ -24,9 +26,11 @@
 </template>
 <script>
 import Nav from '@/components/Nav/Nav.vue';
+import Top from '@/components/Top/Top.vue';
 export default {
     components: {  // 注册组件
         Nav,
+        Top,
        
     },
      methods: {
