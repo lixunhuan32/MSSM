@@ -19,7 +19,9 @@
           <router-view></router-view>
         </el-main>
         <!-- 右侧尾部 -->
-        <el-footer>Footer</el-footer>
+        <el-footer>
+          <Button></Button>
+        </el-footer>
       </el-container>
     </el-container> 
  </div>
@@ -27,11 +29,12 @@
 <script>
 import Nav from '@/components/Nav/Nav.vue';
 import Top from '@/components/Top/Top.vue';
+import Button from '@/components/Button/Button.vue';
 export default {
     components: {  // 注册组件
         Nav,
         Top,
-       
+        Button,
     },
      methods: {
       handleOpen(key, keyPath) {
@@ -62,14 +65,12 @@ export default {
     // 右侧头部和尾部
     .el-header,
     .el-footer {
-      background-color: #b3c0d1;
+      background-color: #fff;
       color: #333;
-      text-align: center;
-      
     }
     // 右侧内容容器
     .el-main {
-      background-color: #e9eef3;
+      background-color: #fff;
       color: #333;
       text-align: center;
      
