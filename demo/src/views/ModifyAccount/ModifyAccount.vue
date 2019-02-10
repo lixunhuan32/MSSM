@@ -21,8 +21,8 @@
                 </el-form-item> 
                    <!-- 确认新密码 -->
                 <el-form-item>
-                <el-button type="primary" @click="submitForm('modifyAccountForm')">登陆</el-button>
-                <el-button @click="resetForm('modifyAccountForm')">重置</el-button>
+                <el-button type="primary" @click="submitForm('modifyAccountForm')">修改</el-button>
+                <el-button @click="resetForm('modifyAccountForm')">清空</el-button>
                 </el-form-item>
              </el-form> 
 
