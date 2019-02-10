@@ -7,7 +7,7 @@
      </div>
       <!-- 内容部分-->
      <div class="text item">
-      <el-form :model="addAccountForm" status-icon :rules="rules" ref="addAccountForm" label-width="100px" class="demo-ruleForm">
+      <el-form size="medium" :model="addAccountForm" status-icon :rules="rules" ref="addAccountForm" label-width="100px" class="demo-ruleForm">
                 <el-form-item label="用户名" prop="username">
                 <el-input type="text" v-model="addAccountForm.username" autocomplete="off"></el-input>
                 </el-form-item>
@@ -20,8 +20,8 @@
                 <el-input v-model.number="addAccountForm.checkPwd"></el-input>
                 </el-form-item>
                   <!-- 选择用户主 -->
-                 <el-form-item label="选择用户主">
-                <el-select v-model="addAccountForm.userGroup" placeholder="选择用户主">
+                 <el-form-item label="选择用户组" prop="userGroup">
+                <el-select v-model="addAccountForm.userGroup" placeholder="选择用户组">
                 <el-option label="普通用户" value="普通用户"></el-option>
                 <el-option label="高级用户" value="高级用户"></el-option>
                 </el-select>
@@ -32,7 +32,6 @@
                 <el-button @click="resetForm('addAccountForm')">重置</el-button>
                 </el-form-item>
             </el-form>
-     
      </div>
   </el-card>
   </div>
@@ -66,9 +65,6 @@ export default {
          }
           callback();
         };
-
-  
-      
       return {
         addAccountForm:{
         username:'',
@@ -97,7 +93,9 @@ export default {
       };
     },
     
-    methods: {  
+    methods: {
+      handleClose(){ },
+      handleOpen(){},
       //  点击登陆按钮触发这个函数
       submitForm(formName) {
         // 获取表单组件 调用验证方法validate
@@ -106,12 +104,14 @@ export default {
           if (valid) {
             alert('前段验证通过，登陆成功');
             // 点击登陆按钮这里就可以收集到的数据发送给前段
-            let params={
-              username:this.loginForm.username,
-              password:this .loginForm.password,
-            }
+            // let params={
+            //   username:this.addAccountForm.username,
+            //   password:this .addAccountForm.password,
+            //   userGroup:this.addAccountForm.userGroup,
+            // }
+            // console.log(params)
           //   这是Vue也就是this.$router一内置跳转方法push
-          // this.$router.push("/")
+          this.$router.push("/iTunes")
           } else {
             console.log('前段验证失败，不能提交给后台');
             return false;
@@ -138,7 +138,7 @@ export default {
       .text{
        .el-form{
          width:320px;
-         margin-bottom:410px;
+         margin-bottom:400px;
        }
     }
   }
