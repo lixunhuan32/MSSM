@@ -74,10 +74,10 @@
         >
       </el-table-column>
       <!-- 操作 -->
-       <el-table-column
-        prop="name"
-        label="操作"
-        >
+       <el-table-column label="操作">
+        <template slot-scope="scope">
+        <el-button  type="text" size="small">入库</el-button>
+       </template>
       </el-table-column>
     </el-table>
           </div>
@@ -87,7 +87,6 @@
    </el-row>
      </div>
   </el-card>
-
   </div>
 
 </template>
@@ -115,16 +114,14 @@ export default {
              stock: '7',  },
                {goodsName: '沐浴露',
              stock: '11',  },
+             {goodsName: '洗面奶',
+             stock: '0',  },
+               
           ]
         }
       }
     }
   </script>
-
-     }
-   }
-}
-</script>
 <style lang="less">
 .home {
   .el-card {
@@ -139,11 +136,18 @@ export default {
        .el-alert{
          margin-bottom: 25px;
       }
+      .el-table{
+        .el-table__body{
+          .el-table_2_column_5{
+            .cell{
+              height:23px;
+            }
+          }
+        }
+      }
     }
   }
-    
   }
 }
-</style>
 </style>
 
