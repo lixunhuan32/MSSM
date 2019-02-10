@@ -15,5 +15,6 @@ export default {
   text-align:left;
 height:60px;
 line-height:60px;
+border-top:2px solid #ccc;
  }
 </style>

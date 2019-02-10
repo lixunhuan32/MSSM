@@ -61,7 +61,7 @@ export default {
          if(value === ""){
            callback(new Error("请再次输入密码"));
          }else if(value!=this.addAccountForm.password){
-           callback(new Error("两次输入的密码已一致"))
+           callback(new Error("两次输入的密码不一致"))
          }
           callback();
         };
@@ -94,8 +94,6 @@ export default {
     },
     
     methods: {
-      handleClose(){ },
-      handleOpen(){},
       //  点击登陆按钮触发这个函数
       submitForm(formName) {
         // 获取表单组件 调用验证方法validate
@@ -104,12 +102,12 @@ export default {
           if (valid) {
             alert('前段验证通过，登陆成功');
             // 点击登陆按钮这里就可以收集到的数据发送给前段
-            // let params={
-            //   username:this.addAccountForm.username,
-            //   password:this .addAccountForm.password,
-            //   userGroup:this.addAccountForm.userGroup,
-            // }
-            // console.log(params)
+            let params={
+              username:this.addAccountForm.username,
+              password:this .addAccountForm.password,
+              userGroup:this.addAccountForm.userGroup,
+            }
+            console.log(params)
           //   这是Vue也就是this.$router一内置跳转方法push
           this.$router.push("/iTunes")
           } else {
@@ -138,7 +136,6 @@ export default {
       .text{
        .el-form{
          width:320px;
-         margin-bottom:400px;
        }
     }
   }

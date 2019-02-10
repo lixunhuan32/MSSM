@@ -1,6 +1,5 @@
 <template>
   <div class="itunes">
-
  <el-card class="box-card">
      <div slot="header" class="clearfix">
        <span class="title">账号管理</span>
