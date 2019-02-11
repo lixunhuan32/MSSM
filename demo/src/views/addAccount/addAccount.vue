@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import qs from 'qs';
 export default {
     data() {
       // 验证密码函数
@@ -107,8 +108,14 @@ export default {
               password:this .addAccountForm.password,
               userGroup:this.addAccountForm.userGroup,
             }
-            console.log(params)
-          //   这是Vue也就是this.$router一内置跳转方法push
+            // console.log(params)
+            // console.log(this.axios)
+            this.axios.post('http://localhost:9999/users/addAccount',qs.stringify(params),{
+              "headers":{'Content-Type':'application/x-www-form-urlencoded'}
+            }).then(response =>{
+              console.log('response.data')
+            });
+            // 这是Vue也就是this.$router一内置跳转方法push
           this.$router.push("/iTunes")
           } else {
             console.log('前段验证失败，不能提交给后台');

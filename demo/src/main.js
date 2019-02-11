@@ -6,6 +6,12 @@ import ElementUI from 'element-ui'
 // 和  样式
 import 'element-ui/lib/theme-chalk/index.css'
 
+// 引入axios
+import axios from 'axios'
+//  把axios直接挂载到vue原型上
+Vue.prototype.axios=axios;
+
+
 //  引入顶级组件 App.vue
 import App from './App.vue'
 
