@@ -113,7 +113,7 @@ export default {
               if(errorCode===0){
                this.$message({
                  type:"success",
-                 message:response.data.msg
+                 message:response.data.msg8
                });
                  // // 这是Vue也就是this.$router一内置跳转方法push
                  this.$router.push("/iTunes")

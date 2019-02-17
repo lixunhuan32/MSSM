@@ -84,7 +84,36 @@ router.get('/accountedit',(req,res)=>{
 })
 //  接收保存修改后的数据
 router.post('/saveeditaccount',(req,res)=>{
- res.send("1") 
+  // 接收修改后的新数据和原来的id
+  let{username,usergroup,editid}=req.body;
+  // 构造sql语句
+  const sqlstr=`update account set username='${username}',usergroup='${usergroup}' where id=${editid}`;
+  //  执行sql语句
+  connection.query(sqlstr,(err,data)=>{
+    if(err) throw err;
+    // affectedRows > 0代表插入成功响应给前段response里成功的信息
+    if(data.affectedRows > 0){
+      res.send({"error_code":0,"reason":"修改数据成功"})
+    }else{
+      res.send({"error_code":1,"reason":"修改数据失败"})
+    }
+  })
+})
+// 接收批量删除的请求
+router.get("/batchdelect",(req,res)=>{
+  let {idArr} =req.query;//接收前段传过来的id根据id查询数据执行删除操作
+  // 构造删除数据的sql语句
+  const sqlstr=`delete from account where id in (${idArr})`;
+  // 执行sql语句进行删除
+  connection.query(sqlstr,(err,data)=>{
+    if (err) throw err;
+    if(data.affectedRows > 0){
+      res.send({"error_code": 0, "reason":"批量删除成功"})
+    }else{
+      res.send({"error_code": 0, "reason":"批量删除成功"})
+    }
+  })
+
 })
 module.exports = router;
  
