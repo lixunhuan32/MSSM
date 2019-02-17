@@ -39,113 +39,120 @@
 </template>
 
 <script>
-import qs from 'qs';
+import qs from "qs";
 export default {
-    data() {
-      // 验证密码函数
-      const pass=(rule,value,callback)=>{
-         if(value===""){
-           callback(new Error("请输入密码"))
-         }else if(value.length<3||value.length>6){
-           callback(new Error("密码长度3-6位"))
-         }else{
-           if(this.addAccountForm.checkPwd !==""){
-            this.$refs.addAccountForm.validateField("checkPwd"); // 调用
-           }
-            callback();
-         }
-      };
-
-      // 这是再次验证密码的函数
-       const checkPass=(rule,value,callback)=>{
-        //  rule是传入的验证规则 value是用户输入的值 callback是一个回调函数
-         if(value === ""){
-           callback(new Error("请再次输入密码"));
-         }else if(value!=this.addAccountForm.password){
-           callback(new Error("两次输入的密码不一致"))
-         }
-          callback();
-        };
-      return {
-        addAccountForm:{
-        username:'',
-        password:'',
-        checkPwd:'',
-         userGroup:'',
-      },
-        // 验证规则
-        rules: {
-          username: [
-            // 账号验证
-            { required:true, message:"请输入账号", trigger: 'blur' }, //非空验证
-            {min:3,max:6,  message:"账号长度在 3-6位", trigger:"blur"} //长度验证
-          ],
-          // 密码验证
-          password: [
-            { required:true,validator:pass,trigger:'blur'  }
-          ],
-          // 确认密码验证
-          checkPwd: [
-            {required:true,validator:checkPass,trigger:'blur' }
-          ],
-          //  选择用户主
-          userGroup:[{required:true,message:'请选择用户组',trigger: 'change'}]
+  data() {
+    // 验证密码函数
+    const pass = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else if (value.length < 3 || value.length > 6) {
+        callback(new Error("密码长度3-6位"));
+      } else {
+        if (this.addAccountForm.checkPwd !== "") {
+          this.$refs.addAccountForm.validateField("checkPwd"); // 调用
         }
-      };
-    },
-    
-    methods: {
-      //  点击登陆按钮触发这个函数
-      submitForm(formName) {
-        // 获取表单组件 调用验证方法validate
-        this.$refs[formName].validate((valid) => {
-          //  如果所用前段验证通过 validate里面的值就是true
-          if (valid) {
-            alert('前段验证通过，登陆成功');
-            // 点击登陆按钮这里就可以收集到的数据发送给前段
-            let params={
-              username:this.addAccountForm.username,
-              password:this .addAccountForm.password,
-              userGroup:this.addAccountForm.userGroup,
-            }
-            // console.log(params)
-            // console.log(this.axios)
-            this.axios.post('http://localhost:9999/users/addAccount',qs.stringify(params),{
-              "headers":{'Content-Type':'application/x-www-form-urlencoded'}
-            }).then(response =>{
-              console.log('response.data')
-            });
-            // 这是Vue也就是this.$router一内置跳转方法push
-          this.$router.push("/iTunes")
-          } else {
-            console.log('前段验证失败，不能提交给后台');
-            return false;
-          }
-        });
-      },
-      // 点击重置按钮触发这个函数
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
+        callback();
       }
+    };
+
+    // 这是再次验证密码的函数
+    const checkPass = (rule, value, callback) => {
+      //  rule是传入的验证规则 value是用户输入的值 callback是一个回调函数
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value != this.addAccountForm.password) {
+        callback(new Error("两次输入的密码不一致"));
+      }
+      callback();
+    };
+    return {
+      addAccountForm: {
+        username: "",
+        password: "",
+        checkPwd: "",
+        userGroup: ""
+      },
+      // 验证规则
+      rules: {
+        username: [
+          // 账号验证
+          { required: true, message: "请输入账号", trigger: "blur" }, //非空验证
+          { min: 3, max: 6, message: "账号长度在 3-6位", trigger: "blur" } //长度验证
+        ],
+        // 密码验证
+        password: [{ required: true, validator: pass, trigger: "blur" }],
+        // 确认密码验证
+        checkPwd: [{ required: true, validator: checkPass, trigger: "blur" }],
+        //  选择用户主
+        userGroup: [
+          { required: true, message: "请选择用户组", trigger: "change" }
+        ]
+      }
+    };
+  },
+
+  methods: {
+    //  点击登陆按钮触发这个函数
+    submitForm(formName) {
+      // 获取表单组件 调用验证方法validate
+      this.$refs[formName].validate(valid => {
+        //  如果所用前段验证通过 validate里面的值就是true
+        if (valid) {
+          // 点击登陆按钮这里就可以收集到的数据发送给前段
+          let params = {
+            username: this.addAccountForm.username,
+            password: this.addAccountForm.password,
+            userGroup: this.addAccountForm.userGroup
+          };
+          this.axios.post("http://127.0.0.1:9999/users/addAccount",qs.stringify(params))
+            .then(response => {
+                // 接收后端返回来的验
+             let errorCode=response.data.errCode;
+              //  根据后端响应的数据判断
+              if(errorCode===0){
+               this.$message({
+                 type:"success",
+                 message:response.data.msg
+               });
+                 // // 这是Vue也就是this.$router一内置跳转方法push
+                 this.$router.push("/iTunes")
+              }else{
+                this.$message.error(response.data.msg);
+              }
+            })
+            .catch(err => {
+              console.log(err + "这是错误信息");
+            });
+        
+        } else {
+          return false;
+        }
+      });
+    },
+    // 点击重置按钮触发这个函数
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     }
-}
+  }
+};
 </script>
 <style lang="less">
-.add-ccount{
-   .el-card{
-    .el-card__header{
+.add-ccount {
+  .el-card {
+    .el-card__header {
       text-align: left;
       font-size: 20px;
       font-weight: 600;
       background-color: #f1f1f1;
-     }
-    .el-card__body{
-      .text{
-       .el-form{
-         width:320px;
-       }
     }
-  }
+    .el-card__body {
+      .text {
+        .el-form {
+          width: 320px;
+        }
+      }
+    }
   }
 }
 </style>
