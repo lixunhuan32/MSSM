@@ -51,10 +51,10 @@
 
    <!-- 分页 -->
     <!-- :page-sizes="[2, 4, 6,10]"是下拉框规定每页显示的条数
-       :page-size="3" 默认显示每 页的条数
-       currentPage动态绑定的数据写在data里默认显示第几页内容
-       handleSizeChange当下拉框改变触发的函数
-       handleCurrentChange调到当前第几页触发的函数
+       :page-size="3" 默认显示每页的条数
+       currentPage当前页
+       handleSizeChange当下拉框改变触发的函数页就是每页显示几条数据
+       handleCurrentChange跳到当前第几页触发的函数
        :total="11"所有数据总和
        layout 包含页码，数据总条数，当前第几页，分几页显示 -->
    <div style="margin-top: 20px; text-align: left;">
@@ -62,10 +62,10 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[2, 4, 6,10]" 
-      :page-size="2"
+      :page-sizes="[2,5,3,10]"
+      :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="11">
+      :total="total">
     </el-pagination>
   </div>
    <!-- 批量删除按钮 和取消选择按钮-->
@@ -115,37 +115,63 @@ export default {
       },
       editid: "", //要修改的数据的id
       selestedaccount: [],
-      currentPage:1,
+      currentPage: 1, //当前页
+      total: 0, //数据的总条数
+      pageSize: 5 //每页显示数据的条数
     };
   },
   // 钩子函数
   created() {
-    // // 调用请求所有账号的数据
+    // // 调用请求分页的函数
     // this.getAccountList();
-     this.getAccountListByPage();
+    this.getAccountListByPage();
   },
   methods: {
-     handleSizeChange(val) { //当下拉框改变触发的函数也就是选择每页显示多少条数据
-        console.log(`每页 ${val} 条`);
-      },
-      handleCurrentChange(val) {//跳到底几页触发的函数
-        console.log(`当前页: ${val}`);
-      },
-      // 请求所有账号数据的函数
-    // getAccountList() {
-    //   this.axios
-    //     .get("http://127.0.0.1:9999/users/accountlist")
-    //     .then(response => {
-    //       //  把后端返回的账号数据 赋值给用户账号表格数据来渲染页面
-    //       this.tableData = response.data;
-    //     })
-    //     .catch(err => {
-    //       console.log(err);
-    //     });
-    // },
-    // 按照分页显示的数据
-    getAccountListByPage(){
+    // 每页显示条数改变 就会触发这个函数
+    handleSizeChange(val) {
+      // 保存每页显示的条数
+      this.pageSize = val;
+      // 调用分页函数
+      this.getAccountListByPage();
+    },
+    // 当前页码改变 就会触发这个函数
+    handleCurrentChange(val) {
+      // 保存当前页码
+      this.currentPage = val;
+      // 调用分页函数
+      this.getAccountListByPage();
+    },
 
+    // // 按照分页显示的数据
+    getAccountListByPage() {
+      // // 收集当前页码和每页显示的条数
+      let pageSize = this.pageSize; //每页数据的条数
+      let currentPage = this.currentPage; //当前页
+      // // 发送axios请求把分页数据传过去 params是get的另外一种传参方式
+      this.axios
+        .get("http://127.0.0.1:9999/users/accountlistbypage", {
+          params: {
+            pageSize,
+            currentPage
+          }
+        })
+        .then(response => {
+          console.log("对应页码的数据", response.data);
+          // 接收后端返回的数据总条数和对应页码的数据放到前段对应的写数据的data中
+          let { total, data } = response.data;
+          this.total = total;
+          this.tableData = data;
+          // 如果当前页没有数据 且 排除第一页
+          if (!data.length && this.currentPage !== 1) {
+            // 页码减去 1
+            this.currentPage -= 1;
+            // 再调用自己
+            this.getAccountListByPage();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     //批量删除的函数
     batchDelete() {
@@ -176,7 +202,7 @@ export default {
                   type: "success",
                   message: reason
                 });
-                this.getAccountList(); //自动刷新，再次调用请求所有数据的函数
+                 this.getAccountListByPage();//自动刷新，再次调用请求分页的函数
               } else {
                 //接收到的码为0，弹出成功的提示信息
                 this.$message.error(reason);
@@ -205,12 +231,6 @@ export default {
     },
     //删除的函数
     handleDelete(id) {
-      if (!id.length) {
-        //  先判断如果没有勾选数据就结束后面的弹框
-        this.$message.error("请勾选以后再操作批量删除按钮！");
-        return;
-      }
-      // 确定删除的模态框
       this.$confirm("你确定要删除吗？", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -231,7 +251,7 @@ export default {
                   type: "success",
                   message: msg
                 });
-                this.getAccountList(); //删除成功后自动刷新列表调用请求所有数据的函数
+                this.getAccountListByPage();//删除成功后自动刷新列表调用请求分页数据的函数
               } else {
                 //删除失败的提示信息
                 this.$message.error(msg);
@@ -289,7 +309,7 @@ export default {
               type: "success",
               message: reason
             });
-            this.getAccountList(); //修改成功自动刷新列表调用请求所有数据的函数
+            this.getAccountListByPage(); //修改成功自动刷新列表调用请求分页数据的函数
           } else {
             this.$message.error(reason); //给失败的提示框
           }
@@ -321,3 +341,6 @@ export default {
   }
 }
 </style>
+
+
+
