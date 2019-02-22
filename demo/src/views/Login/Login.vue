@@ -28,6 +28,7 @@
     </div>
 </template>
 <script>
+import qs from "qs";
 export default {
     data() {
        // 包含特殊字符的函数
@@ -99,14 +100,37 @@ export default {
         this.$refs[formName].validate((valid) => {
           //  如果所用前段验证通过 validate里面的值就是true
           if (valid) {
-            alert('前段验证通过，登陆成功');
             // 点击登陆按钮这里就可以收集到的数据发送给前段
             let params={
               username:this.loginForm.username,
               password:this .loginForm.password,
-            }
+            };
+              this.axios.post("/login/checklogin",qs.stringify(params))
+              .then(response=>{
+              // 接收后端返回的验证码和提示信息
+              let{error_code,reason,username,token}=response.data;
+              if(error_code===0){
+                 //  把token保存在浏览器的本地存储中
+                window.localStorage.setItem('token',token);
+                 // 接收后端返回的用户名存入本地存储方便以后调用
+                window.localStorage.setItem('username', username);
+                 this.$message({ //给成功的提示框
+                type: "success",
+                message: reason
+                 });
+                   // 跳转到后端首页
+                this.$router.push('/');
+              }else{
+                this.$message({ //给失败的提示框
+                type: "success",
+                message: reason
+                 });
+               }
+              })
+              .catch(err=>{
+                console.log(err)
+              })
             // 这是Vue也就是this.$router一内置跳转方法push
-          this.$router.push("/")
           } else {
             console.log('前段验证失败，不能提交给后台');
             return false;

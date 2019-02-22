@@ -39,7 +39,8 @@
 </template>
 
 <script>
-import qs from "qs";
+// 引入 qs
+import qs from 'qs';
 export default {
   data() {
     // 验证密码函数
@@ -105,15 +106,16 @@ export default {
             password: this.addAccountForm.password,
             userGroup: this.addAccountForm.userGroup
           };
-          this.axios.post("http://127.0.0.1:9999/users/addAccount",qs.stringify(params))
+          //  把接收到的数据发送给前段
+          this.axios.post("/users/addAccount",qs.stringify(params))
             .then(response => {
-                // 接收后端返回来的验
+                // 接收后端返回来的验证信息
              let errorCode=response.data.errCode;
               //  根据后端响应的数据判断
               if(errorCode===0){
                this.$message({
                  type:"success",
-                 message:response.data.msg8
+                 message:response.data.msg
                });
                  // // 这是Vue也就是this.$router一内置跳转方法push
                  this.$router.push("/iTunes")

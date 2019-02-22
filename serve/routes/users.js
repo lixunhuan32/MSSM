@@ -22,7 +22,6 @@ router.all('*', (req, res, next) => {
 router.post('/addAccount', (req, res) => {
   //  接收前端发过来的参数
   let { username, password, userGroup } = req.body;
-  //console.log(username,password, userGroup)
   // // 接收到前段数据，把数据存入数据库
   // // 构建增加数据的sql语句
   const sqlStr = `insert into account(username,password,userGroup)values('${username}','${password}','${userGroup}')`
@@ -64,7 +63,7 @@ router.get('/accountdel', (req, res) => {
       res.send({ "error_code": 0, "msg": "删除数据成功" })
     } else {
       //否则就返回成功的数据对象
-      res.send({ "error_code": 0, "msg": "删除数据失败" })
+      res.send({ "error_code": 1, "msg": "删除数据失败" })
     }
   })
 });
@@ -139,6 +138,43 @@ router.get("/accountlistbypage", (req, res) => {
         data
       })
     })
+  })
+});
+
+
+// 验证旧密码的正确性 接收前段发过来的旧密码和账户名的值是否一一对应
+router.get('/oldPwd', (req, res) => {
+  // 接收前端传过来的旧密码
+  let { oldPwd, username } = req.query;
+  // 构造sql
+  const sqlStr = `select * from account where username='${username}' and password='${oldPwd}'`;
+  // 执行sql
+  connection.query(sqlStr, (err, data) => {
+    if (err) throw err;
+    if (data.length) { // 如果查询出数据也就是data有length 证明正确
+      res.send({"error_code": 0, "reason":"旧密码正确!"});
+    } else { // 否则就是不正确
+      res.send({"error_code": 1, "reason":"旧密码错误!"})
+    }
+  })
+})
+// 保存新密码
+router.post('/savenewpwd', (req, res) => {
+  // 接收参数
+  let {username,pwd, password} = req.body;
+  // 构造sql
+  const sqlStr = `update account set password='${password}' where username='${username}' and password='${pwd}'`;
+  // 执行sql
+  connection.query(sqlStr, (err, data) => {
+    if (err) throw err;
+    // 判断
+    if (data.affectedRows > 0) {
+      // 成功
+      res.send({"error_code": 0, "reason":"密码修改成功!请重新登录!"})
+    } else {
+      // 失败
+      res.send({"error_code": 1, "reason":"密码修改失败!"})
+    }
   })
 })
 module.exports = router;

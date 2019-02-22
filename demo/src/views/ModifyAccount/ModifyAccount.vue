@@ -8,15 +8,15 @@
      <div class="text item">
          <el-form size="medium" :model="modifyAccountForm" status-icon :rules="rules" ref="modifyAccountForm" label-width="100px" class="demo-ruleForm"> 
                  <!-- 原密码 -->
-                 <el-form-item label="原密码" prop="pass">
-                <el-input type="text" v-model="modifyAccountForm.pass" autocomplete="off"></el-input>
+                 <el-form-item label="旧密码" prop="pwd">
+                <el-input type="text" v-model="modifyAccountForm.pwd" autocomplete="off"></el-input>
                 </el-form-item> 
                  <!-- 新密码 -->
                  <el-form-item label="新密码" prop="password">
                 <el-input type="text" v-model="modifyAccountForm.password" autocomplete="off"></el-input>
                 </el-form-item> 
 
-                  <el-form-item label="新密码" prop="checkPwd">
+                  <el-form-item label=" 确认新密码" prop="checkPwd">
                 <el-input v-model.number="modifyAccountForm.checkPwd"></el-input>
                 </el-form-item> 
                    <!-- 确认新密码 -->
@@ -33,11 +33,35 @@
 </template>
 
  <script>
-
+ import moment from "moment";
+import qs from "qs";
 export default {
     data(){
+      // 旧的密码
+      const checkOldPwd=(rule,value,callback)=>{
+     
+        // //  获取token中当前登录的账户名
+         let username = window.localStorage.getItem("username");
+        //  console.log(value,username)
+        // val就是用户输入旧密码的值
+        this.axios.get(`/users/oldPwd?oldPwd=${value}&username=${username}`) //&username=${username}
+        .then(response=>{
+          // 接收后端返回的错误码 和 提示信息、
+          let { error_code, reason } = response.data;
+          if (error_code !== 0) {
+            // 错误提示
+            callback(new Error(reason));
+          } else {
+            // 正确的回调
+            callback();
+          }
+        })
+        .catch(err=>{
+          console.log(err)
+        })
+      }
       //  新密码
-      const pass=(rule,value,callback)=>{
+      const password=(rule,value,callback)=>{
         if(value===""){
          callback(new Error("请输入新的密码"))
         }else if(value.length<3||value.length>6){
@@ -64,19 +88,19 @@ export default {
       
       return{
          modifyAccountForm:{
-           pass:'',
-       password:'',
-        checkPwd:''
+           pwd:'',//旧密码
+       password:'', //新密码
+        checkPwd:'' //确认新密码
          },
           // 验证规则
          rules: {
-          pass: [
+          pwd: [
             // 原来密码验证
-            { required:true, message:"请输入原密码", trigger: 'blur' }, //非空验证
+            { required:true,validator:checkOldPwd, trigger: 'blur' }, 
           ],
           // 新密码验证
           password: [
-            { required:true,validator:pass,trigger:'blur'  }
+            { required:true,validator:password,trigger:'blur'  }
           ],
           // 再猜验证新密码
           checkPwd: [
@@ -92,21 +116,42 @@ export default {
       this.$refs[formName].validate(valid => {
         // 如果所有验证通过 valid就是true
         if (valid) {
-          alert(" 密码修改成功 前端验证通过 可以提交给后端！");
-
           // 收集用户输入的所有账号数据
           let params = {
-            pass: this.modifyAccountForm.pass,  //原来的面
-            checkPwd: this.modifyAccountForm.checkPwd, //现在的新密码
+             username: window.localStorage.getItem("username"), //用户名
+             pwd: this.modifyAccountForm.pwd,  //原来的旧密码
+            password: this.modifyAccountForm.password, //新密码
+         
           };
+          // 发送axios给前段
+            this.axios.post("/users/savenewpwd", qs.stringify(params))
+            .then(response => {
+              // 接收后端数据
+              let { error_code, reason } = response.data;
+              // 判断 如果成功   
+              if (error_code === 0) {
+                // 清除token
+                window.localStorage.removeItem("token");
 
-          console.log(`原来的密码是：${params.pass} 现在的密码是：${params. checkPwd}`)
-        // 跳转到账号管理页面
-        this.$router.push('/accountmanage')
-
+                // 弹出提示
+                this.$message({
+                  type: "success",
+                  message: reason
+                });
+                setTimeout(() => {
+                  // 跳转到登录页面
+                  this.$router.push("/login");
+                }, 1000);
+              } else {
+                // 弹出错误提示
+                this.$message.error(reason);
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            });
         } else {
           // 否则就是false
-          alert("密码修改失败 前端验证失败 不能提交给后端！");
           return false;
         }
       });

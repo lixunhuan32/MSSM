@@ -142,21 +142,20 @@ export default {
       this.getAccountListByPage();
     },
 
-    // // 按照分页显示的数据
+    // // 按照分页显示的函数
     getAccountListByPage() {
       // // 收集当前页码和每页显示的条数
       let pageSize = this.pageSize; //每页数据的条数
       let currentPage = this.currentPage; //当前页
       // // 发送axios请求把分页数据传过去 params是get的另外一种传参方式
       this.axios
-        .get("http://127.0.0.1:9999/users/accountlistbypage", {
+        .get("/users/accountlistbypage", {
           params: {
             pageSize,
             currentPage
           }
         })
         .then(response => {
-          console.log("对应页码的数据", response.data);
           // 接收后端返回的数据总条数和对应页码的数据放到前段对应的写数据的data中
           let { total, data } = response.data;
           this.total = total;
@@ -192,7 +191,7 @@ export default {
         .then(() => {
           // 把接到的id发给后台后台根据这id查数据执行删除操作的请求
           this.axios
-            .get(`http://127.0.0.1:9999/users/batchdelect?idArr=${id}`)
+            .get(`/users/batchdelect?idArr=${id}`)
             .then(response => {
               // 接收删除失败的错误码和提示信息
               let { error_code, reason } = response.data;
@@ -239,7 +238,7 @@ export default {
         .then(() => {
           //  发送axios请求把id传过去
           this.axios
-            .get(`http://127.0.0.1:9999/users/accountdel?id=${id}`)
+            .get(`/users/accountdel?id=${id}`)
             .then(response => {
               // console.log(response.data);
               // 接后台删除的错误码
@@ -275,7 +274,7 @@ export default {
       this.flag = true; //点击修改时模态框显示出来 flag为true
       //  点击修改按钮传当前id过去查询当前数据
       this.axios
-        .get(`http://127.0.0.1:9999/users/accountedit?id=${id}`)
+        .get(`/users/accountedit?id=${id}`)
         .then(response => {
           let result = response.data[0]; //接收后端返回来的数据是一个数组，索引第0项就是整个对象
           this.deifFrom.username = result.username; //把接到的数据回填到模态框 result.username;就是接到的数据
@@ -296,7 +295,7 @@ export default {
       // 发送axios请求
       this.axios
         .post(
-          "http://127.0.0.1:9999/users/saveeditaccount",
+          "/users/saveeditaccount",
           qs.stringify(params)
         )
         .then(response => {
