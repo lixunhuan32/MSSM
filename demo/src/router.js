@@ -55,6 +55,11 @@ export default new Router({
         name: 'SalesStatistics',
       component: () => import('./views/SalesStatistics/SalesStatistics.vue'),
         },
+        {
+          path: '/personal',
+          name: 'personal',
+          component: () => import('./views/Personal/Personal.vue')
+        },
       ]
     }
   ]  

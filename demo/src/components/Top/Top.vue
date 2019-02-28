@@ -8,7 +8,6 @@
       </el-col>
   <el-col :span="12">
        <div class="top-right">
-
          <el-dropdown @command="handleCommand">
       <span class="el-dropdown-link">
         欢迎您<span class="username">{{username}}</span>
@@ -33,10 +32,25 @@ export default {
     data(){
         return{
             username:"",
-            avatarUrl:'/avatar.jpg',
+            avatarUrl:'',
         }
     },
  methods: {
+     // 获取头像
+        getAvatar () {
+            this.axios.get('/login/getavatar')
+            .then(response => {
+                let data = response.data.data;
+                    // 拼接路径，除了根路径后面的存的是相对路径
+                this.avatarUrl ='http://127.0.0.1:9999' + data[data.length - 1].imgUrl;//取最后一个对象里的URL地址为准
+               
+                // console.log(data[data.length - 1].imgUrl);
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        },
+
      handleCommand (command) {
             // 如果点击的是退出
             if (command === 'logout') {
@@ -52,12 +66,18 @@ export default {
                     // 跳转到登录页面
                     this.$router.push('/login')
                 }, 1000)
+            }else if(command === 'personal'){
+           
+                   this.$router.push('/personal')
+
             }
      },
 },
 created () {  //钩子函数
         // 通过登录页面收集到的token中的username把他渲染到前端用户名的位置
         this.username = window.localStorage.getItem('username');
+        // 调用获取头像的函数
+         this.getAvatar();
     }
 }
 
@@ -89,7 +109,7 @@ created () {  //钩子函数
             .avatar{
             display:inline-block;
             width:60px;
-            height:100%;
+            height:60px;
             margin-left:10px;
             text-align:center;
             img{

@@ -100,7 +100,7 @@
                         @current-change="handleCurrentChange"
                         :current-page="currentPage"
                         :page-sizes="[1, 3, 5, 10, 20, 50]"
-                        :page-size="pageSize"
+                        :page-size="pageSize" 
                         layout="total, sizes, prev, pager, next, jumper"
                         :total="total">
                       </el-pagination>
@@ -131,7 +131,7 @@ export default {
       },
       total: 0, // 数据总条数
       currentPage: 1, // 当前页
-      pageSize: 3, // 默认每页显示3条
+      pageSize: 3, // 默认每页显示3条 
       dialogFormVisible: false, // 控制修改模态框的显示和隐藏的变量
       goodsTableData: [], // 用户账号列表的数据
       editId: "", // 保存要修改的数据的id
@@ -166,25 +166,28 @@ export default {
     // 查询
     search() {  
       // 收集查询的参数
-      let params =  {
-        cateName: this.searchForm.cateName, 
-        keyWord: this.searchForm.keyWord
-      }
-
-      // 发送给后端
-      this.axios.post('/goods/search',qs.stringify(params))
-        .then(response => {
-          console.log(response)
-          this.goodsTableData = response.data;
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      // let params =  {
+      //   cateName: this.searchForm.cateName, 
+      //   keyWord: this.searchForm.keyWord
+      // }
+      //  调用请求分页的函数
+      this.getGoodsListByPage();
+      // // 发送给后端
+      // this.axios.post('/goods/search',qs.stringify(params))
+      //   .then(response => {
+      //     console.log(response)
+      //     this.goodsTableData = response.data;
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //   })
     },
     // 当页面尺寸(每页显示多少条)改变 就触发这个函数 传入当前页面尺寸
     handleSizeChange(val) {
       // 重置pageSize 的值
+
       this.pageSize = val;
+      // console.log("当页显示多少条数据"+this.pageSize)
       // 调用获取数据的函数
       this.getGoodsListByPage();
     },
@@ -289,17 +292,28 @@ export default {
     // 按照分页请求数据
     getGoodsListByPage() {
       // 收集当前页码 和 每页显示条数
-      let pageSize = this.pageSize;
-      let currentPage = this.currentPage;
+      // let pageSize = this.pageSize;
+      // let currentPage = this.currentPage;
 
       // 参数对象
-      let params = {
-        pageSize,
-        currentPage
-      };
+            
+      
+       let pageSize=this.pageSize;//每页条数 
+        let currentPage=this.currentPage;//当前页码
+        let cateName= this.searchForm.cateName; //分类名
+        let keyWord = this.searchForm.keyWord;//关键字
+  
+        // console.log("当页显示多少条数据"+this.pageSize)
       // 发送ajax请求 把分页数据发送给后端
       this.axios
-        .get("/goods/goodslistbypage", params)
+        .get("/goods/goodslistbypage",{
+          params: {
+            pageSize,
+            currentPage,
+            cateName,
+            keyWord
+          }
+        })
         .then(response => {
           // 接收后端返回的数据总条数 total 和 对应页码的数据 data
           let { total, data } = response.data;

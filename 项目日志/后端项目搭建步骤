@@ -1,0 +1,21 @@
+1 express搭建后端项目目录
+    1） 创建项目目录
+        express 项目名 -e
+
+    2） 进入项目 下载依赖
+        cnpm i 
+    
+    3） 40行，监听端口
+        app.listen(666, () => {
+            console.log('后端服务器启动成功，地址是: http://127.0.0.1:666')
+        })
+
+    4） 启动项目
+        nodemon app
+
+    备注： 可以改变启动项目的方式， 在package.json中 改为如下代码
+        "scripts": {
+            "start": "nodemon ./app.js"
+        }
+
+    那么就可以运行命令： npm run start  或 npm start  来启动项目

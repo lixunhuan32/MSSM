@@ -120,7 +120,7 @@ export default {
                  // // 这是Vue也就是this.$router一内置跳转方法push
                  this.$router.push("/iTunes")
               }else{
-                this.$message.error(response.data.msg);
+                this.$message.error(response.data.msg         );
               }
             })
             .catch(err => {

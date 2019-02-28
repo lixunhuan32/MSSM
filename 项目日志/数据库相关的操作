@@ -1,0 +1,110 @@
+1 node连接mysql数据库的步骤
+    1) 下载mysql模块
+        cnpm i mysql --save
+
+    2) 引入mysql模块
+        const mysql = require('mysql')
+
+    3) 创建连接对象
+        const connection = mysql.createConnection({
+            host     : 'localhost', // 数据库地址
+            user     : 'root', // 数据库用户名
+            password : 'root', // 数据库密码
+            port: '3306'  // 端口号 默认就是3306 可以不写
+            database : 'test'  // 数据库的名字
+        });
+
+    4) 执行连接的方法
+        connection.connect();
+
+    
+2 node对mysql的增删改查操作写法
+    1） 增加数据（插入数据）
+        a) 先写一句增加数据的sql语句
+            const sqlStr = 'insert into 表名（字段列表）values(值列表)';
+        
+        b) 使用连接对象的query方法，执行这个sql语句
+            connection.query(sqlStr,  (err, data) => {
+                if (err) throw err;
+                console.log(data);
+            })
+
+    2） 删除数据
+        a) 先写一句删除数据的sql语句
+            const sqlStr = 'delete from 表名 where 条件';
+        
+        b) 使用连接对象的query方法，执行这个sql语句
+            connection.query(sqlStr,  (err, data) => {
+                if (err) throw err;
+                console.log(data);
+            })
+
+    3） 修改数据
+        a) 先写一句修改数据的sql语句
+            const sqlStr = 'update 表名 set 字段1=新的值1，字段2=新的值2 where 条件';
+        
+        b) 使用连接对象的query方法，执行这个sql语句
+            connection.query(sqlStr,  (err, data) => {
+                if (err) throw err;
+                console.log(data); // affectedRows 受影响的行数
+            })
+
+    4） 查询数据
+        a) 先写一句查询数据的sql语句
+            const sqlStr = 'select * from 表名';
+        
+        b) 使用连接对象的query方法，执行这个sql语句
+            connection.query(sqlStr,  (err, data) => {
+                if (err) throw err;
+                console.log(data);
+            })
+
+    小结：nodejs操作mysql就分为两步
+        A 先写一句sql语句（可以使增删改查）
+        B 再执行这个sql语句
+
+3 数据库的设计
+    数据库名:  smms
+    表名： account
+    建表语句:
+    create table account (
+        id int primary key auto_increment,
+        username varchar(50),
+        password varchar(50),
+        usergroup varchar(50),
+        ctime  timestamp default current_timestamp
+    );
+
+
+     商品表:
+            create table `goods` (
+                id int primary key auto_increment,
+                ctime timestamp default current_timestamp, 
+                cateName varchar(50),
+                barCode varchar(100),
+                goodsName varchar(100),
+                costPrice float(7, 2),
+                marketPrice float(7, 2),
+                salePrice float(7, 2),
+                goodsNum int,
+                goodsWeight float(7, 2),
+                unit varchar(10),
+                discount varchar(10),
+                promotion varchar(10),
+                goodsDesc text
+            );
+
+        说明: id 主键 自动增长
+              ctime 时间 当前事件
+              cateName 分类名字
+              barCode  商品条形码
+              goodsName 商品名称
+              costPrice 进价
+              marketPrice  市场价
+              salePrice 售价
+              goodsNum 商品数量
+              goodsWeight 商品重量
+              unit   商品单位
+              discount 是否打折
+              promotion 是否促销
+              goodsDesc 商品描述

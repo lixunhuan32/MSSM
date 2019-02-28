@@ -1,0 +1,312 @@
+1 项目的目标
+    1）熟练使用vue组件化开发方式。（*****）
+    2）熟练使用 axios 进行前后端数据交互。（*****）
+    3）掌握 git版本控制 的使用(用命令行)。
+    4）熟悉后端的增删改查逻辑。
+    5）对整个完整项目的前后端所有的交互流程有个了解。
+
+Day01:
+    1 git的使用常用命令
+        git clone 仓库地址         // 第一次从服务器下载代码
+        git status                // 查看状态     
+        git add .                 // 纳入版本控制 
+        git commit -m"简单描述"    // 提交到本地仓库
+
+        git push 仓库地址/ master          // 推送到远程仓库
+        推送到远程仓库可以这样写: git push origin master
+
+        git pull 仓库地址   // 从远程仓库拉取  
+
+        项目仓库地址: https://github.com/sineLT/supms-system.git
+
+        // 配置邮箱 和 用户名
+        git config --global user.email "你的邮箱@qq.com";
+        git config --global uesr.name "你的账号";
+
+    2 项目的启动
+        1) cnpm i 安装所有依赖 
+        2) npm run serve 启动项目
+        
+        注意：
+        项目地址:  http://127.0.0.1:8080  https://github.com/lixunhuan32/MSSM.git
+
+    3 项目的目录分配
+        views： 放页面级别的组件
+        components: 放小组件（主要是一些公用的组件）
+
+    4 项目集成Element-ui
+        1) 下载指定版本且保存到依赖列表
+            cnpm i element-ui@2.4.11 --save
+
+        2) 在入口文件 main.js 中引入
+            import ElementUI from 'element-ui';            // 组件文件（js）
+            import 'element-ui/lib/theme-chalk/index.css'; // 样式文件
+
+        3）注册elementui
+            Vue.use(ElementUI);
+
+    5 登录页面的实现
+        1）登录组件实现（复制组件代码修改）
+        2）表单验证。
+            { required: true必填， message: "非空", trigger: "触发的方式" },  // 非空验证
+            { min: 3.， max: 6,  message: "长度3 - 6", trigger: "触发的方式" }, // 长度验证
+            { require: true, validator: 自定义函数名, trigger: "触发的方式" }, // 自定义验证函数
+
+            // 验证函数
+            const 自定义函数名 = (rule, value, callback) => {
+                // const regExp = /xxxxxxx/;
+
+                // value 就是用户输入的值
+                if (value === '') {
+                    callback(new Error("不能为空"))
+                } else if (value.length < 3 || value.length > 6) {
+                    callback(new Error("长度必须3 - 6 位"))
+                } else if (!regExp.test(value)) {
+                    callback(new Error("不能包含特殊字符"))
+                } else {
+                    callback(); // 成功的回调 绿色的勾勾
+                }
+            }
+        3）两个函数
+            a) 点击登录按钮 触发 submitForm() 函数
+            submitForm()做提交验证 有一个变量叫valid 如果所有前端验证都通过，那么就是true 允许发送请求给后端
+            否则，就不允许发送请求给后端。
+
+            b) 点击重置按钮 触发 resetForm() 函数
+
+    6 路由的分配（一个路径path，对应一个组件component）
+        exprot default new Router({
+            routes: [
+                {
+                    path: '/login',
+                    component: () => import('./views/Login/Login.vue')
+                },
+                {
+                    path: '/',
+                    component: () => import('./views/Index/Index.vue'),
+                    children: [
+                        {
+                            path: '',  // 需要一个默认首页 没有路径
+                            component: () => import('./views/Home/Home.vue')
+                        },
+                        {
+                            path: '/accountmanage',  // 账号管理的路径
+                            name: 'accountmanage',
+                            component: () => import('./views/AccountManage/AccountManage.vue') // 账号管理的组件
+                        },
+                        {
+                            path: '/accountadd', // 添加账号的路径
+                            name: 'accountadd',
+                            component: () => import('./views/AccountAdd/AccountAdd.vue') // 添加账号的组件
+                        }
+                    ]
+                }
+            ];
+        })
+
+        // 路由跳转
+        this.$router.push('/你要跳转到的路径')
+
+        // 在组件中获取导航路径地址
+        this.$route.path;
+
+
+    7 后端首页的实现
+        1) 左侧导航组件的实现（复制粘贴修改）
+        2）右侧头部组件抽取
+        3）右侧尾部组件抽取
+
+Day02:
+    1) 组件强化
+        a) 后端首页组件
+        b) 账号添加组件
+        c) 账号列表组件
+        d) 其他组件
+DAY03:
+    1) 添加账号功能的实现
+        a) 前端- 用户填写表单，通过所有前端验证，点击添加按钮，触发函数，收集所有账号数据，通过axios发送给后端
+            注意：axios的使用
+                i) 下载axios
+                    cnpm i axios --save
+
+                ii) 把axios挂在vue的原型上
+                    Vue.prototype.axios = axios;
+
+        b) 后端- 接收请求，接收前端发送的账号数据
+        c) 后端- 把数据存入数据库 根据操作结果 判断
+            成功：返回给前端成功的数据对象
+            失败：返回给前端失败的数据对象
+        d) 前端- 根据后端返回的数据 弹出对应的提示
+            成功： 弹出成功提示 且 跳转到账号管理页面
+            失败： 弹出失败提示
+
+    2）账号列表显示功能实现
+        a) 前端- 在生命周期的钩子函数 created 里面 发送一个请求给后端 请求所有账号数据
+        b) 后端- 接收请求 查询数据库里面所有账号数据 把查询的所有数据返回给前端
+        d) 前端- 接收到所有账号数据 直接赋值给 accountTableData 渲染账号列表
+
+    3）删除功能的实现
+        a) 前端- 点击删除按钮，触发函数，传入id，在函数里面，发送ajax请求，把id传给后端
+        b) 后端- 接收请求 接收要删除的这一条数据的id 
+        c) 后端- 以id为条件 执行删除操作 根据删除的结果判断
+            成功： 返回成功的数据对象 
+            失败： 返回失败的数据对象
+
+        d) 前端- 接收后端响应的数据 
+            成功： 弹出成功提示 且 刷新列表（重新请求一下列表数据）
+            失败： 弹出失败提示
+
+    4) 修改功能的实现
+        A 数据回填
+            a) 前端- 点击修改，触发函数，传入id，先保存id，然后发送ajax，把id发送给后端
+            b) 后端- 接收请求，接收id，根据id查询这一条需要修改的数据，把这一条数据返回给前端
+            c) 前端- 接收后端返回的数据，一一对应，回填表单。
+
+        B 保存修改后的新数据
+            a) 前端- 点击确定修改按钮，发送请求给后端，把新数据和原来的id一起发送给后端
+            b) 后端- 接收前端的数据（新数据和要修改数据的id），根据id为条件执行修改,根据修改结果给判断
+                成功：返回给前端成功的数据对象
+                失败：返回给前端失败的数据对象
+            c) 前端- 接收后端返回的数据对象，判断
+                成功：弹出修改成功提示 且 刷新列表（重新请求一下列表数据）
+                失败：弹出失败的提示
+
+DAY04:
+    1) 批量删除功能实现
+        A) 在单选框的选择状态发生改变 就会触发的函数 handleSelectionChange 里面，收集
+           选中的数据
+
+        B) 批量删除
+            1） 前端- 点击批量删除按钮，从选中的数据里面把id都取出来，放在一个数组中
+            2） 前端- 判断，如果这个数组没有长度，那么就是没有选中数据，弹出提示，直接return
+                不需要给后端发送ajax请求
+
+            3）前端- 发送ajax请求，把被选中的数据的id当成参数发送给后端
+            4）后端- 接收请求 接收id（是一个数组）构造sql，执行删除，根据删除结果判断
+                成功： 返回成功的数据对象
+                失败： 返回失败的数据对象
+            5）前端- 接收后端返回的数据对象，判断    
+                成功：弹出成功提示 且 刷新列表
+                失败：弹出失败的提示
+
+    2) 分页功能实现( 后端分页 )
+        分析：
+            前端给后端发送什么数据？
+                a) 当前页码 currentPage (一般工作中只要这一个就够了)
+                b) 每页条数 pageSize 
+
+            后端给前端返回什么数据？
+                a) 数据的总条数 total
+                    查询数据库的所有数据，它的length就是数据总条数
+
+                b) 每个页码对应的数据
+                    let n = ( currentPage - 1 ) * pageSize;
+                    
+                    分页的sql语句：
+                    const sqlStr = select * from account limit n, pageSize
+
+    3) 分页的实现步骤：
+        a) 前端- 写一个函数 收集当前页码currentPage 和 每页的条数pageSize 两个参数，
+           在这个函数里面 发送ajax请求给后端        
+
+        b) 后端- 接收请求 接收两个参数 currentPage 和 pageSize
+        c) 后端- 构造SQL 查询所有数据
+            let sqlStr = `select * form account order by ctime desc`;
+            connection.query(sqlStr, (err, data) => {
+                if (err) throw err;
+                let total = data.length;   // 数据总条数
+            })
+
+        d) 后端- 构造sql 查询出每一页对应的数据
+            let sqlStr = `select * form account order by ctime desc`;
+            connection.query(sqlStr, (err, data) => {
+                if (err) throw err;
+                let total = data.length;   // 数据总条数
+
+                // 跳过条数
+                let n = (currentPage - 1) * pageSize;
+                // sql查询页码对应数据的sql
+                sqlStr += ` limit ${n}, ${pageSize}`;
+                // 执行sql
+                connection.query(sqlStr, (err, data) => {
+                    if (err) throw err;
+                    res.send({"total": total,  "data": data})
+                })
+            })
+        e) 前端- 接收到后端响应的数据 赋值到对应的data中的变量即可。
+
+DAY05:
+    1）登录功能的实现
+        A) 验证用户的身份（用户名和密码是否正确）
+            a) 前端- 输入账号和密码（通过所有前端验证），点击登录，触发函数，在函数里面，收集账号和密码
+               发送ajax给后端，把账号和密码发送给后端
+
+            b) 后端- 接收请求，接收账号和密码，构造sql，去数据库查询是否存在这个账号，判断
+                存在：  返回成功的数据对象
+                不存在：返回失败的数据对象
+            c) 前端- 接收请求，接收后端返回的数据，根据结果判断：
+                成功： 弹出成功提示 且 跳转到系统后端首页
+                失败： 弹出失败的提示
+
+
+        B) 验证用户的登录状态（是否登录） =》 "token"
+            a) 后端- 在登录成功的路由里面，创建一个token，把这个token返回给前端 
+                补充：需要一个模块：jsonwebtoken
+
+            b) 前端- 接收后端数据，接收到token，把token保存到浏览器（保存到localstorage）。
+                补充： localstorage 的基本使用：
+                    存数据： localstorage.setItem('key', value)
+                    取数据： localstorage.getItem('key');
+                    删除数据: localstorage.removeItem('key')
+
+            c) 前端- 拦截所有路由（全局路由守卫 beforeEach）在路由守卫里面，验证有没有token
+                如果有 就是登陆过的  如果没有 就是没有登陆过的 （需要跳转到首页）
+
+        C) 退出登录
+            a) 前端- 点击退出登录按钮，触发函数，清除token
+            b) 前端- 弹出对应的提示 且 跳转到登录页面。
+
+   
+    2) 显示当前登录用户
+        a) 后端- 在登录成功的路由里面，给前端返回当前登录的用户名。
+        b) 前端- 接收到用户名，把用户名存入浏览器
+        c) 前端- 在top组件的生命周期created中，取出浏览器本地存储的用户名，渲染到对应的位置。
+    3）密码修改功能的实现
+        A) 验证旧密码的正确性
+            a) 前端- 收集用户名和旧密码 发送给后端
+            b) 后端- 接收参数，构造sql 执行sql 判断
+                存在： 返回存在的数据对象
+                不存在： 返回不存在的数据对象
+            c) 前端- 接收后端响应的数据，判断 
+                失败：给出密码错误的提示
+                成功： 直接调用 callback() 绿框框 绿勾勾
+        B) 修改密码
+            a) 前端- 收集用户名 旧密码 新密码，发送ajax给后端
+            b) 后端- 接收参数，构造SQL，执行修改，判断
+                成功： 返回成功的数据对象
+                失败： 返回失败的数据对象
+            c) 前端- 接收后端响应的数据，判断
+                成功：弹成功 清token 跳首页。
+                失败：弹失败。
+
+DAY06:
+    1) axios的企业化封装
+    2) token 的接口权限验证。
+    3) 商品模块
+        A 添加商品功能实现。
+        B 商品列表功能实现。
+    4) 模糊查询的实现
+        1） 前端- 点击查询按钮，触发函数，收集分类 和 关键字，发送给后端。
+        2） 后端- 接收前端发送的请求，接收数据
+        4)  后端- 构造sql 按照条件查询数据（难点？）
+        5)  后端- 响应查询结果给前端。
+        6） 前端- 把后端返回的数据，渲染页面。
+
+
+
+
+
+
+
+
+        

@@ -3,18 +3,38 @@ var express = require('express');
 var router = express.Router();
 
 
-//  接收根目录请求
-router.get('/', (req, res) => {
-  res.send('这是后端路由，这里是users')
-});
-// 引入链接数据库模块
-const connection = require('./connect.js');
+
+
+// 引入express-jwt 用于验证token
+const expressJwt = require('express-jwt');
+// 定义秘钥
+const secretKey = 'itsource';
+
+// 引入连接数据库模块
+const connection = require('./connect')
 
 // 统一设置响应头 解决跨域问题
 router.all('*', (req, res, next) => {
-  // 设置响应头解决跨域问题
+  // 设置响应头 解决跨域(目前最主流的方式)
+  // 允许的域
   res.header('Access-Control-Allow-Origin', '*');
+  // 允许的请求头
+  res.header("Access-Control-Allow-Headers", "authorization");
   next();
+})
+
+// 使用模块 express-jwt 验证token
+router.use(expressJwt ({
+  secret:secretKey 
+}));
+
+//拦截器
+router.use( (err, req, res, next) => {
+  //当token验证失败时会抛出如下错误
+  if (err.name === 'UnauthorizedError') {   
+      //这个需要根据自己的业务逻辑来处理
+      res.status(401).send('无效的token 未授权...');
+  }
 });
 
 
@@ -176,6 +196,9 @@ router.post('/savenewpwd', (req, res) => {
       res.send({"error_code": 1, "reason":"密码修改失败!"})
     }
   })
-})
+});
+
+
+
 module.exports = router;
 
